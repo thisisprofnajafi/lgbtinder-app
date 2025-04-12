@@ -1,0 +1,108 @@
+in here 
+<?php
+require dirname(dirname(__FILE__)) . '/inc/Connection.php';
+require dirname(dirname(__FILE__)) . '/firebase/firebase.php';  // Include Firebase Auth
+
+use Kreait\Firebase\Exception\AuthException;
+use Kreait\Firebase\Exception\FirebaseException;
+
+$data = json_decode(file_get_contents('php://input'), true);
+header('Content-type: application/json');
+// Ensure required fields exist
+if (!$data || !isset($data['mobile']) || !isset($data['ccode']) || $data['mobile'] == '' || $data['ccode'] == '') {
+    echo json_encode(["ResponseCode" => "401", "Result" => "false", "ResponseMsg" => "Invalid Input!"]);
+    exit;
+}
+
+$mobile = strip_tags(mysqli_real_escape_string($dating, $data['mobile']));
+$code = strip_tags(mysqli_real_escape_string($dating, $data['ccode']));
+
+// Check if the number already exists in the database
+$chek = $dating->query("SELECT * FROM tbl_user WHERE mobile='$mobile' AND ccode='$code'")->num_rows;
+
+if ($chek != 0) {
+    echo json_encode(["ResponseCode" => "401", "Result" => "false", "ResponseMsg" => "Already Exist Mobile Number!"]);
+    exit;
+}
+
+// Format phone number as Firebase requires (e.g., "+919876543210")
+$fullMobileNumber = "+$code$mobile";
+
+// **Send OTP using Firebase**
+try {
+    $firebaseAuth = FirebaseService::getAuth(); // Get Firebase Auth instance
+    $firebaseAuth->sendSmsVerification($fullMobileNumber); // Send OTP
+
+    echo json_encode([
+        "ResponseCode" => "200",
+        "Result" => "true",
+        "ResponseMsg" => "OTP Sent Successfully!",
+        "mobile" => $fullMobileNumber
+    ]);
+} catch (AuthException | FirebaseException $e) {
+    echo json_encode([
+        "ResponseCode" => "500",
+        "Result" => "false",
+        "ResponseMsg" => "Failed to Send OTP: " . $e->getMessage()
+    ]);
+}
+?>
+
+
+i am sending an otp code with firebase for the users.
+
+and in this part
+
+BlocProvider.of<OnbordingCubit>(context)
+                    .mobileCheckApi(number: onBordingProvider.mobileNumber.text, ccode: onBordingProvider.ccode)
+                    .then((value) {
+                  if (value == "true") {
+                    BlocProvider.of<OnbordingCubit>(context).sendOtpFunction(sent: true);
+                  }
+                });
+
+
+i am getting the phone number to sent to the user
+BlocProvider.of<OnbordingCubit>(context)
+                    .mobileCheckApi(number: onBordingProvider.mobileNumber.text, ccode: onBordingProvider.ccode)
+                    .then((value) {
+                  if (value == "true") {
+                    BlocProvider.of<OnbordingCubit>(context).sendOtpFunction(sent: true);
+                  }
+                });
+
+
+and these functions 
+Future<void> sendOtpFunction({
+  required bool sent,
+  }) async {
+    emit(LoadingState());
+    try {
+        if(sent)
+          emit(otpComplete());  // Emit a proper state
+          
+    } catch (e) {
+      debugPrint("Exception in sendOtpFunction: $e");
+      emit(ErrorState("An unexpected error occurred. Please try again."));
+    }
+  }
+
+
+  Future mobileCheckApi({required String number, required String ccode}) async {
+    try {
+      Map body = {"mobile": number, "ccode": "+$ccode"};
+
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.mobileCheck}", data: body);
+
+      if (response.data["Result"] == "false") {
+        Fluttertoast.showToast(msg: response.data["ResponseMsg"]);
+      }
+
+      return response.data["Result"];
+    } catch (e) {
+      emit(ErrorState(e.toString()));
+      rethrow;
+    }
+  }
+
+I have an error in doing this

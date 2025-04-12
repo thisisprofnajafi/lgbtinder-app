@@ -1,0 +1,28 @@
+#flutter_lints: ^4.0.0
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+
+linter:
+
+  rules:
+
+#================================================================
+
+#lint: ^2.3.0
+#include: package:lint/strict.yaml # For production apps
+#include: package:lint/casual.yaml # For code samples, hackathons and other non-production code
+#include: package:lint/package.yaml # Use this for packages with public API
+
+#analyzer:
+
+#linter:
+
+#  rules:
+
+#================================================================
+
+#lints: ^4.0.0
+#include: package:lints/recommended.yaml
+#or
+#include: package:lints/core.yaml
