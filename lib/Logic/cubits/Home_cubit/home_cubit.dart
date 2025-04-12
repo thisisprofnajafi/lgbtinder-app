@@ -150,7 +150,7 @@ class HomePageCubit extends Cubit<HomePageStates> {
   Future planDataApi(context, uid) async {
     Map data = {"uid": uid};
     try {
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.userInfo}", data: data);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getCurrentUser}", data: data);
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
           return response.data["direct_chat"];

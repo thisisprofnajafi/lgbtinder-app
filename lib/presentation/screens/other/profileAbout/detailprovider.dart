@@ -37,7 +37,7 @@ class DetailProvider extends ChangeNotifier {
     try {
       Map data = {"uid": uid, "profile_id": profileId, "lats": lat, "longs": long};
 
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.profileInfo}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getProfile}", data: data);
 
       if (response.statusCode == 200) {
         isLoading = false;
@@ -59,7 +59,7 @@ class DetailProvider extends ChangeNotifier {
     Map data = {"uid": Provider.of<HomeProvider>(context, listen: false).uid, "profile_id": profileblock};
 
     try {
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.profileblock}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.blockUser}", data: data);
       print(" + + + + + + + + : ---------  ${response.data}");
       if (response.statusCode == 200) {
         Profileblockuser.fromJson(response.data);

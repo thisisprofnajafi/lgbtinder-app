@@ -218,7 +218,7 @@ class HomeProvider extends ChangeNotifier {
   notificationApi() async {
     Map data = {"uid": "$uid"};
     try {
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.notificationList}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getNotifications}", data: data);
 
       if (response.statusCode == 200) {
         notificationModel = NotificationModel.fromJson(response.data);
@@ -390,30 +390,30 @@ class HomeProvider extends ChangeNotifier {
                 children: [
                   SvgPicture.asset("assets/Image/seemore.svg"),
 
-                  // Text("You’ve seen everyone in your filters".tr,style: Theme.of(context).textTheme.headlineMedium,textAlign: TextAlign.center),
+                  // Text("You've seen everyone in your filters".tr,style: Theme.of(context).textTheme.headlineMedium,textAlign: TextAlign.center),
                   Text(
-                      AppLocalizations.of(context)?.translate("You’ve seen everyone in your filters") ??
-                          "You’ve seen everyone in your filters",
+                      AppLocalizations.of(context)?.translate("You've seen everyone in your filters") ??
+                          "You've seen everyone in your filters",
                       style: Theme.of(context).textTheme.headlineMedium,
                       textAlign: TextAlign.center),
                   const SizedBox(
                     height: 10,
                   ),
-                  // Text("To give you another chance, we’re showing you everyone again.".tr,style: Theme.of(context).textTheme.bodyMedium!.copyWith(height: 1.2),textAlign: TextAlign.center),
+                  // Text("To give you another chance, we're showing you everyone again.".tr,style: Theme.of(context).textTheme.bodyMedium!.copyWith(height: 1.2),textAlign: TextAlign.center),
                   Text(
                       AppLocalizations.of(context)
-                              ?.translate("To give you another chance, we’re showing you everyone again.") ??
-                          "To give you another chance, we’re showing you everyone again.",
+                              ?.translate("To give you another chance, we're showing you everyone again.") ??
+                          "To give you another chance, we're showing you everyone again.",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(height: 1.2),
                       textAlign: TextAlign.center),
                   const SizedBox(
                     height: 10,
                   ),
-                  // Text("We’ll always show you new and unseen profiles first.".tr,style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.appColor,height: 1.2,fontWeight: FontWeight.w700),textAlign: TextAlign.center),
+                  // Text("We'll always show you new and unseen profiles first.".tr,style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.appColor,height: 1.2,fontWeight: FontWeight.w700),textAlign: TextAlign.center),
                   Text(
                       AppLocalizations.of(context)
-                              ?.translate("We’ll always show you new and unseen profiles first.") ??
-                          "We’ll always show you new and unseen profiles first.",
+                              ?.translate("We'll always show you new and unseen profiles first.") ??
+                          "We'll always show you new and unseen profiles first.",
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium!

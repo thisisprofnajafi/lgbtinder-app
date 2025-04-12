@@ -122,7 +122,7 @@ class ProfileProvider extends ChangeNotifier {
     };
 
     try {
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.accDelete}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.deleteAccount}", data: data);
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
           isUserLogOut(Provider.of<HomeProvider>(context, listen: false).uid);
@@ -256,7 +256,7 @@ class ProfileProvider extends ChangeNotifier {
     };
 
     try {
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.blocklist}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getBlockedUsers}", data: data);
       if (response.statusCode == 200) {
         blocklistApi = BlocklistApi.fromJson(response.data);
         isLoading = true;
@@ -277,7 +277,7 @@ class ProfileProvider extends ChangeNotifier {
     Map data = {"uid": Provider.of<HomeProvider>(context, listen: false).uid, "img": img};
 
     try {
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.pro_pic}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.uploadProfilePicture}", data: data);
       print(" + + + + + + + + : ---------  ${response.data}");
       if (response.statusCode == 200) {
         Profilepickimage.fromJson(response.data);
@@ -338,7 +338,7 @@ class ProfileProvider extends ChangeNotifier {
     Map data = {"uid": Provider.of<HomeProvider>(context, listen: false).uid, "profile_id": profileblock};
 
     try {
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.unblockapikey}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.unblockUser}", data: data);
       print(" + + + + + + + + : ---------  ${response.data}");
       if (response.statusCode == 200) {
         UnBlockApi.fromJson(response.data);

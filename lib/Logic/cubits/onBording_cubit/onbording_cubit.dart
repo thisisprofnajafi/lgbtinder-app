@@ -101,7 +101,7 @@ class OnbordingCubit extends Cubit<OnbordingState> {
       
       // Check if user exists
       Map data = {"mobile": number, "ccode": countryCode};
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.userLogin}", data: data);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.login}", data: data);
       
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
@@ -145,7 +145,7 @@ class OnbordingCubit extends Cubit<OnbordingState> {
 
   Future<RelationGoalModel> relationGoalListApi() async {
     try {
-      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.relationGoalList}");
+      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.getRelationGoals}");
 
       if (response.statusCode == 200) {
         return RelationGoalModel.fromJson(response.data);
@@ -161,7 +161,7 @@ class OnbordingCubit extends Cubit<OnbordingState> {
 
   Future<InterestModel> getInterestApi() async {
     try {
-      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.getInterestList}");
+      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.getInterests}");
 
       if (response.statusCode == 200) {
         return InterestModel.fromJson(response.data);
@@ -177,7 +177,7 @@ class OnbordingCubit extends Cubit<OnbordingState> {
 
   Future<LanguageModel> languagelistApi() async {
     try {
-      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.languagelist}");
+      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.getLanguages}");
 
       if (response.statusCode == 200) {
         return LanguageModel.fromJson(response.data);
@@ -242,7 +242,7 @@ class OnbordingCubit extends Cubit<OnbordingState> {
           'otherpic$a': await MultipartFile.fromFile(images[a].path, filename: images[a].path.split('/').last)
       });
 
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.regiseruser}", data: formData);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.register}", data: formData);
 
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
@@ -290,7 +290,7 @@ class OnbordingCubit extends Cubit<OnbordingState> {
       {required String mobile, required String password, required String ccode, required context}) async {
     try {
       Map data = {"mobile": mobile, "password": password, "ccode": "+$ccode"};
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.forgetPassword}", data: data);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.forgotPassword}", data: data);
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
           Navigator.pushNamedAndRemoveUntil(context, AuthScreen.authScreenRoute, (route) => false);

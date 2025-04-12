@@ -488,7 +488,7 @@ class ChattingProvider extends ChangeNotifier {
     };
 
     try {
-      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getblockapi}", data: data);
+      var response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getBlockedUsers}", data: data);
       print("+ + + + + +:----- ${response.data}");
       if (response.statusCode == 200) {
         getblockListApi = GetblockListApi.fromJson(response.data);

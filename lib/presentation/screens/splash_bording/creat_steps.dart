@@ -76,21 +76,48 @@ class _CreatStepsState extends State<CreatSteps> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              if (onBordingProvider.name.text.isNotEmpty &&
-                  onBordingProvider.email.text.isNotEmpty &&
-                  onBordingProvider.stepsCount == 0) {
-                onBordingProvider.updatestepsCount(1);
-              } else if (onBordingProvider.mobileNumber.text.isNotEmpty && onBordingProvider.stepsCount == 1) {
-                BlocProvider.of<OnbordingCubit>(context)
+              if (onBordingProvider.stepsCount == 0) {
+                if (onBordingProvider.name.text.isNotEmpty && onBordingProvider.email.text.isNotEmpty) {
+                  onBordingProvider.updatestepsCount(1);
+                } else {
+                  if (onBordingProvider.name.text.isEmpty) {
+                    Fluttertoast.showToast(
+                        msg: AppLocalizations.of(context)?.translate("Please Enter Name") ?? "Please Enter Name");
+                  } else if (onBordingProvider.email.text.isEmpty) {
+                    Fluttertoast.showToast(
+                        msg: AppLocalizations.of(context)?.translate("Please Enter Email") ?? "Please Enter Email");
+                  }
+                }
+              } else if (onBordingProvider.stepsCount == 1) {
+                if (onBordingProvider.mobileNumber.text.isNotEmpty) {
+                  BlocProvider.of<OnbordingCubit>(context)
                     .mobileCheckApi(number: onBordingProvider.mobileNumber.text, ccode: onBordingProvider.ccode)
                     .then((value) {
-                  if (value == "true") {
-                    BlocProvider.of<OnbordingCubit>(context).sendOtpFunction(
-                      phoneNumber: "+${onBordingProvider.ccode}${onBordingProvider.mobileNumber.text}",
-                      context: context,
-                    );
-                  }
-                });
+                      if (value == "true") {
+                        BlocProvider.of<OnbordingCubit>(context)
+                          .registerBasicInfo(
+                            name: onBordingProvider.name.text,
+                            email: onBordingProvider.email.text, 
+                            mobile: onBordingProvider.mobileNumber.text,
+                            ccode: "+${onBordingProvider.ccode}",
+                            bio: onBordingProvider.bio.text,
+                            refCode: onBordingProvider.referelCode.text,
+                            context: context
+                          ).then((registerResult) {
+                            if (registerResult == "success") {
+                              BlocProvider.of<OnbordingCubit>(context).sendOtpFunction(
+                                phoneNumber: "+${onBordingProvider.ccode}${onBordingProvider.mobileNumber.text}",
+                                context: context,
+                              );
+                            }
+                          });
+                      }
+                    });
+                } else {
+                  Fluttertoast.showToast(
+                    msg: AppLocalizations.of(context)?.translate("Please Enter MobileNumber") ?? 
+                        "Please Enter MobileNumber");
+                }
               } else if (onBordingProvider.bdatePicker.toString() != "null" && onBordingProvider.stepsCount == 2) {
                 onBordingProvider.updatestepsCount(3);
               } else if (onBordingProvider.select >= 0 && onBordingProvider.stepsCount == 3) {
@@ -109,19 +136,13 @@ class _CreatStepsState extends State<CreatSteps> {
                 onBordingProvider.updatestepsCount(9);
               } else if (onBordingProvider.stepsCount == 9 && onBordingProvider.images.length >= 3) {
                 BlocProvider.of<OnbordingCubit>(context)
-                    .registerUserApi(
-                        name: onBordingProvider.name.text,
-                        email: onBordingProvider.email.text,
-                        mobile: onBordingProvider.mobileNumber.text,
-                        ccode: "+${onBordingProvider.ccode}",
+                    .updateUserProfile(
                         bday: onBordingProvider.bdatePicker.toString().split(" ").first,
                         searchPreference: onBordingProvider.maleFemaleBoth(onBordingProvider.select1),
                         rediusSearch: onBordingProvider.kmCounter.toStringAsFixed(2),
                         relationGoal: onBordingProvider.relationGoal.toString(),
-                        profileBio: onBordingProvider.bio.text,
                         intrest: onBordingProvider.selectHobi.join(","),
                         language: onBordingProvider.selectedLanguage.join(","),
-                        refCode: onBordingProvider.referelCode.text,
                         gender: onBordingProvider.maleFemaleOther(onBordingProvider.select),
                         lat: onBordingProvider.lat.toString(),
                         long: onBordingProvider.long.toString(),
@@ -131,22 +152,7 @@ class _CreatStepsState extends State<CreatSteps> {
                   Fluttertoast.showToast(msg: value.responseMsg.toString());
                 });
               } else {
-                if ((onBordingProvider.name.text.isEmpty ||
-                        onBordingProvider.email.text.isEmpty) &&
-                    onBordingProvider.stepsCount == 0) {
-                  if (onBordingProvider.name.text.isEmpty) {
-                    Fluttertoast.showToast(
-                        msg: AppLocalizations.of(context)?.translate("Please Enter Name") ?? "Please Enter Name");
-                  } else if (onBordingProvider.email.text.isEmpty) {
-                    Fluttertoast.showToast(
-                        msg:
-                            AppLocalizations.of(context)?.translate("Please Enter Email") ?? "Please Enter Email");
-                  }
-                } else if (onBordingProvider.mobileNumber.text.isEmpty && onBordingProvider.stepsCount == 1) {
-                  Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)?.translate("Please Enter MobileNumber") ??
-                          "Please Enter MobileNumber");
-                } else if (onBordingProvider.bdatePicker.toString() == "null" &&
+                if (onBordingProvider.bdatePicker.toString() == "null" &&
                     onBordingProvider.stepsCount == 2) {
                   Fluttertoast.showToast(
                       msg: AppLocalizations.of(context)?.translate("Please Enter BirthDate") ??
@@ -264,8 +270,6 @@ class _CreatStepsState extends State<CreatSteps> {
                     return step7();
                   case 7:
                     return step8();
-                  // case 8:
-                  //   return step9();
                   case 8:
                     return step10();
                   case 9:
@@ -350,6 +354,15 @@ class _CreatStepsState extends State<CreatSteps> {
               },
               textalingn: TextAlign.start,
             ),
+            const SizBoxH(size: 0.018),
+            TextFieldPro(
+              controller: onBordingProvider.referelCode,
+              hintText: AppLocalizations.of(context)?.translate("Referral Code (Optional)") ?? "Referral Code (Optional)",
+              onChangee: (e) {
+                onBordingProvider.updateNameFiled(controller: onBordingProvider.referelCode, value: e);
+              },
+              textalingn: TextAlign.start,
+            ),
           ],
         ),
       ),
@@ -363,16 +376,13 @@ class _CreatStepsState extends State<CreatSteps> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // "Your GoMeet identity 😎".tr,
             AppLocalizations.of(context)?.translate("Your LGBTinder identity 😎") ?? "Your LGBTinder identity 😎",
             style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizBoxH(size: 0.012),
           Text(
-            // "Add your phone number and your job to tell others what you do for a living.".tr,
-            AppLocalizations.of(context)
-                    ?.translate("Add your phone number and your job to tell others what you do for a living.") ??
+            AppLocalizations.of(context)?.translate("Add your phone number and your job to tell others what you do for a living.") ??
                 "Add your phone number and your job to tell others what you do for a living.",
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
@@ -401,7 +411,6 @@ class _CreatStepsState extends State<CreatSteps> {
             },
             decoration: InputDecoration(
               helperText: null,
-              // hintText: "Mobile Number".tr,
               hintText: AppLocalizations.of(context)?.translate("Mobile Number") ?? "Mobile Number",
               hintStyle: Theme.of(context).textTheme.bodyMedium,
               filled: true,
@@ -423,15 +432,8 @@ class _CreatStepsState extends State<CreatSteps> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
-            // invalidNumberMessage: "Please enter your mobile number".tr,
             invalidNumberMessage: AppLocalizations.of(context)?.translate("Please enter your mobile number") ??
                 "Please enter your mobile number",
-            // validator: (p0) {
-            //   if (p0!.completeNumber.isEmpty) {
-            //     return 'Please enter your number';
-            //   } else {}
-            //   return null;
-            // },
           ),
         ],
       ),
@@ -445,16 +447,13 @@ class _CreatStepsState extends State<CreatSteps> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // "Let's celebrate you 🎂".tr,
             AppLocalizations.of(context)?.translate("Let's celebrate you 🎂") ?? "Let's celebrate you 🎂",
             style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizBoxH(size: 0.012),
           Text(
-            // "Tell us your birthdate. Your profile does not display your birthdate, only your age.".tr,
-            AppLocalizations.of(context)?.translate(
-                    "Tell us your birthdate. Your profile does not display your birthdate, only your age.") ??
+            AppLocalizations.of(context)?.translate("Tell us your birthdate. Your profile does not display your birthdate, only your age.") ??
                 "Tell us your birthdate. Your profile does not display your birthdate, only your age.",
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
@@ -519,15 +518,12 @@ class _CreatStepsState extends State<CreatSteps> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // "Be true to yourself 🌟".tr,
             AppLocalizations.of(context)?.translate("Be true to yourself 🌟") ?? "Be true to yourself 🌟",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizBoxH(size: 0.012),
           Text(
-            // "Choose the gender that best represents you. Authenticity is key to meaningful connections.".tr,
-            AppLocalizations.of(context)?.translate(
-                    "Choose the gender that best represents you. Authenticity is key to meaningful connections.") ??
+            AppLocalizations.of(context)?.translate("Choose the gender that best represents you. Authenticity is key to meaningful connections.") ??
                 "Choose the gender that best represents you. Authenticity is key to meaningful connections.",
             style: Theme.of(context).textTheme.bodyMedium,
           ),
@@ -583,16 +579,13 @@ class _CreatStepsState extends State<CreatSteps> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              // "Your relationship goals 💘".tr,
               AppLocalizations.of(context)?.translate("Your relationship goals 💘") ??
                   "Your relationship goals 💘",
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizBoxH(size: 0.012),
             Text(
-              // "Choose the type of relationship you're seeking on Datify. Love, friendship, or something in between—it's your choice.".tr,
-              AppLocalizations.of(context)?.translate(
-                      "Choose the type of relationship you're seeking on Datify. Love, friendship, or something in between—it's your choice.") ??
+              AppLocalizations.of(context)?.translate("Choose the type of relationship you're seeking on Datify. Love, friendship, or something in between—it's your choice.") ??
                   "Choose the type of relationship you're seeking on Datify. Love, friendship, or something in between—it's your choice.",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
@@ -611,7 +604,6 @@ class _CreatStepsState extends State<CreatSteps> {
                       onBordingProvider.updaterelationGoal(int.parse(data.id.toString()));
                     },
                     child: Container(
-                      // height: 55,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
@@ -652,22 +644,18 @@ class _CreatStepsState extends State<CreatSteps> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // "Find matches nearby📍".tr,
-            AppLocalizations.of(context)?.translate("Find matches nearby📍") ?? "Find matches nearby📍",
+            AppLocalizations.of(context)?.translate("Find matches nearby��") ?? "Find matches nearby📍",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizBoxH(size: 0.012),
           Text(
-            // "Select your preferred distance range to discover matches conveniently. We'll help you find love close by.".tr,
-            AppLocalizations.of(context)?.translate(
-                    "Select your preferred distance range to discover matches conveniently. We'll help you find love close by.") ??
+            AppLocalizations.of(context)?.translate("Select your preferred distance range to discover matches conveniently. We'll help you find love close by.") ??
                 "Select your preferred distance range to discover matches conveniently. We'll help you find love close by.",
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizBoxH(size: 0.018),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text(
-              // "Distance Preference".tr,
               AppLocalizations.of(context)?.translate("Distance Preference") ?? "Distance Preference",
               style: Theme.of(context)
                   .textTheme
@@ -686,7 +674,6 @@ class _CreatStepsState extends State<CreatSteps> {
               value: onBordingProvider.kmCounter,
               max: 500,
               min: 10,
-              // divisions: 10,
               activeColor: AppColors.appColor,
               inactiveColor: Theme.of(context).dividerTheme.color!,
               label: onBordingProvider.kmCounter.abs().toString(),
@@ -707,16 +694,13 @@ class _CreatStepsState extends State<CreatSteps> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // "Discover like-minded people 🤗".tr,
             AppLocalizations.of(context)?.translate("Discover like-minded people 🤗") ??
                 "Discover like-minded people 🤗",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizBoxH(size: 0.012),
           Text(
-            // "Share your interests, passions, and hobbies. We'll connect you with people who share your enthusiasm.".tr,
-            AppLocalizations.of(context)?.translate(
-                    "Share your interests, passions, and hobbies. We'll connect you with people who share your enthusiasm.") ??
+            AppLocalizations.of(context)?.translate("Share your interests, passions, and hobbies. We'll connect you with people who share your enthusiasm.") ??
                 "Share your interests, passions, and hobbies. We'll connect you with people who share your enthusiasm.",
             style: Theme.of(context).textTheme.bodyMedium,
           ),
@@ -725,11 +709,9 @@ class _CreatStepsState extends State<CreatSteps> {
             controller: onBordingProvider.hobieSearchContoller,
             style: Theme.of(context).textTheme.bodySmall!,
             decoration: InputDecoration(
-              // isDense: true,
               contentPadding: const EdgeInsets.all(10),
               filled: true,
               fillColor: Theme.of(context).cardColor,
-              // hintText: "Search.".tr,
               hintText: AppLocalizations.of(context)?.translate("Search.") ?? "Search.",
               hintStyle: Theme.of(context).textTheme.bodySmall,
               prefixIcon: SizedBox(
@@ -881,16 +863,13 @@ class _CreatStepsState extends State<CreatSteps> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              // "Do you know which languages? 🗺️".tr,
               AppLocalizations.of(context)?.translate("Do you know which languages? 🗺️") ??
                   "Do you know which languages? 🗺️",
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizBoxH(size: 0.012),
             Text(
-              // "Select your country of origin. We will verify your identity in the next step of your residence.".tr,
-              AppLocalizations.of(context)?.translate(
-                      "Select your country of origin. We will verify your identity in the next step of your residence.") ??
+              AppLocalizations.of(context)?.translate("Select your country of origin. We will verify your identity in the next step of your residence.") ??
                   "Select your country of origin. We will verify your identity in the next step of your residence.",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
@@ -899,9 +878,7 @@ class _CreatStepsState extends State<CreatSteps> {
               controller: onBordingProvider.languageContoller,
               style: Theme.of(context).textTheme.bodySmall!,
               decoration: InputDecoration(
-                // isDense: true,
                 contentPadding: const EdgeInsets.all(10),
-                // hintText: "Search.".tr,
                 hintText: AppLocalizations.of(context)?.translate("Search.") ?? "Search.",
                 hintStyle: Theme.of(context).textTheme.bodySmall,
                 filled: true,
@@ -1063,15 +1040,12 @@ class _CreatStepsState extends State<CreatSteps> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // "Search Preference 🌟".tr,
             AppLocalizations.of(context)?.translate("Search Preference 🌟") ?? "Search Preference 🌟",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizBoxH(size: 0.012),
           Text(
-            // "Choose the gender that best represents you. Authenticity is key to meaningful connections.".tr,
-            AppLocalizations.of(context)?.translate(
-                    "Choose the gender that best represents you. Authenticity is key to meaningful connections.") ??
+            AppLocalizations.of(context)?.translate("Choose the gender that best represents you. Authenticity is key to meaningful connections.") ??
                 "Choose the gender that best represents you. Authenticity is key to meaningful connections.",
             style: Theme.of(context).textTheme.bodyMedium,
           ),
@@ -1126,15 +1100,12 @@ class _CreatStepsState extends State<CreatSteps> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // "Show your best self 📸".tr,
             AppLocalizations.of(context)?.translate("Show your best self 📸") ?? "Show your best self 📸",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizBoxH(size: 0.012),
           Text(
-            // "Upload up to six of your best photos or video to make a fantastic first impression. Let your personality shine.".tr,
-            AppLocalizations.of(context)?.translate(
-                    "Upload up to six of your best photos or video to make a fantastic first impression. Let your personality shine.") ??
+            AppLocalizations.of(context)?.translate("Upload up to six of your best photos or video to make a fantastic first impression. Let your personality shine.") ??
                 "Upload up to six of your best photos or video to make a fantastic first impression. Let your personality shine.",
             style: Theme.of(context).textTheme.bodyMedium,
           ),
@@ -1145,12 +1116,6 @@ class _CreatStepsState extends State<CreatSteps> {
               child: InkWell(
                 onTap: () async {
                   onBordingProvider.pickupImage(0);
-                  // if (images.isEmpty) {
-                  //   final XFile? image =
-                  //       await picker.pickImage(source: ImageSource.gallery);
-                  //   images.add(image!);
-                  //   setState(() {});
-                  // }
                 },
                 child: Stack(
                   alignment: Alignment.topRight,
@@ -1225,14 +1190,6 @@ class _CreatStepsState extends State<CreatSteps> {
                       InkWell(
                         onTap: () async {
                           onBordingProvider.pickupImage(1);
-                          // if (images.length == 1) {
-                          //   final XFile? image = await picker.pickImage(
-                          //       source: ImageSource.gallery);
-
-                          //   images.add(image!);
-
-                          //   setState(() {});
-                          // }
                         },
                         child: Container(
                             height: MediaQuery.of(context).size.height / 7,

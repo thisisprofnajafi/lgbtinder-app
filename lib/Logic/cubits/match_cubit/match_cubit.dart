@@ -51,7 +51,7 @@ class MatchCubit extends Cubit<MatchStates> {
         "longs": Provider.of<HomeProvider>(context, listen: false).long
       };
 
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.favourite}", data: data);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getFavorites}", data: data);
 
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
@@ -103,7 +103,7 @@ class MatchCubit extends Cubit<MatchStates> {
         "lats": Provider.of<HomeProvider>(context, listen: false).lat,
         "longs": Provider.of<HomeProvider>(context, listen: false).long
       };
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.newMatch}", data: data);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getMatches}", data: data);
 
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {

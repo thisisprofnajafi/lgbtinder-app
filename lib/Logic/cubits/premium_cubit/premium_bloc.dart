@@ -21,7 +21,7 @@ class PremiumBloc extends Cubit<PremiumState> {
       "uid": Provider.of<HomeProvider>(context, listen: false).uid,
     };
     try {
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.plan}", data: data);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.getSubPlans}", data: data);
       PremiumModel premiumModel = PremiumModel.fromJson(response.data);
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
@@ -42,7 +42,7 @@ class PremiumBloc extends Cubit<PremiumState> {
 
   Future<PaymentModel> paymentGateway(context) async {
     try {
-      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.paymentGateway}");
+      Response response = await _api.sendRequest.get("${Config.baseUrlApi}${Config.getPaymentMethods}");
       PaymentModel premiumModel = PaymentModel.fromJson(response.data);
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
@@ -75,7 +75,7 @@ class PremiumBloc extends Cubit<PremiumState> {
       "p_method_id": pMethodId
     };
     try {
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.planPurchase}", data: data);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.storePlanPurchase}", data: data);
 
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {

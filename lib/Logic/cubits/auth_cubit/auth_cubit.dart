@@ -107,7 +107,7 @@ class AuthCubit extends Cubit<AuthStates> {
         "ccode": countryCode,
       };
 
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.userLogin}", data: body);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.login}", data: body);
 
       if (response.statusCode == 200 && response.data["Result"] == "true") {
         emit(AuthUserHomeState(response.data.toString()));

@@ -263,7 +263,7 @@ class OnBordingProvider with ChangeNotifier {
       // Check if user exists in system
       Map data = {"mobile": number, "ccode": countryCode};
       var api = Api();
-      Response response = await api.sendRequest.post("${Config.baseUrlApi}${Config.userLogin}", data: data);
+      Response response = await api.sendRequest.post("${Config.baseUrlApi}${Config.login}", data: data);
       
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
@@ -276,7 +276,7 @@ class OnBordingProvider with ChangeNotifier {
             (route) => false
           );
         } else {
-          // User does not exist - continue with registration
+          // User does not exist - continue with registration`
           Navigator.pop(context); // Close OTP dialog
           updateStepCount(2); // Move to step 2 of registration
         }

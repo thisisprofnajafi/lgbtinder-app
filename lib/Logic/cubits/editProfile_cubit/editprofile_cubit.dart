@@ -101,7 +101,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
           'otherpic$a': await MultipartFile.fromFile(images[a].path, filename: images[a].path.split('/').last)
       });
 
-      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.editProfile}", data: formData);
+      Response response = await _api.sendRequest.post("${Config.baseUrlApi}${Config.updateProfile}", data: formData);
 
       if (response.statusCode == 200) {
         if (response.data["Result"] == "true") {
