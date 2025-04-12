@@ -1,0 +1,26 @@
+name: LGBTinder Backend
+
+on:
+  push:
+    branches:
+      - master
+    
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: 7488407974:AAFl4Ek9IanbvlkKlRoikQAqdkDtFYbD0Gc
+          TELEGRAM_CHAT_ID: -1002401613512_32
+          GITHUB_ACTOR: ${{ github.actor }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          FORMATTED_COMMIT_MESSAGE=$(echo "${COMMIT_MESSAGE}" | sed 's/$/\\n/' | sed ':a;N;$!ba;s/\n/\\n/g')
+          MESSAGE=$(echo -e "😎 <b>LGBTinder Application Submit</b> 😎\n\n👌 <b>Status:</b> New Changes Applied\n\n👤 <b>User:</b> ${GITHUB_ACTOR}\n <blockquote>${FORMATTED_COMMIT_MESSAGE}</blockquote>")
+          curl -s -X POST https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage \
+            -d chat_id=${TELEGRAM_CHAT_ID} \
+            -d text="${MESSAGE}" \
+            -d parse_mode="HTML"
