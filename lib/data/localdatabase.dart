@@ -16,6 +16,17 @@ class Preferences {
     return userdata;
   }
 
+  static Future<void> saveToken(String token) async {
+    SharedPreferences instance = await SharedPreferences.getInstance();
+    await instance.setString("auth_token", token);
+    log("Token saved!");
+  }
+
+  static Future<String> getToken() async {
+    SharedPreferences instance = await SharedPreferences.getInstance();
+    return instance.getString("auth_token") ?? "";
+  }
+
   static Future getDataFromLocal({required var key}) async {
     SharedPreferences instance = await SharedPreferences.getInstance();
     var localdata = instance.getString(key);

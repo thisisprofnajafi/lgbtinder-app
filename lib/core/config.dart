@@ -39,6 +39,9 @@ class Config {
   static const String updateUserProfile = "/auth/update-profile"; // Alternative to editProfile
   static const String deleteAccount = "/auth/delete-account"; // Replaces accDelete
 
+  // Profile completion endpoint
+  static const String profileComplete = "/profile/complete";
+
   // User routes
   static const String getCurrentUser = "/user"; // Replaces userInfo
 
